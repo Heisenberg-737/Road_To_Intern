@@ -346,21 +346,178 @@ int unboundedKnapsack(int n, vector<int> &vals, vector<int> &w, int cap)
         int max_ = 0;
         for (int j = 0; j < n; j++)
         {
-            if(w[j] <= i)
+            if (w[j] <= i)
             {
                 int rembagc = i - w[j];
                 int totalbagv = dp[rembagc] + vals[j];
 
-                if(totalbagv > max_)
+                if (totalbagv > max_)
                     max_ = totalbagv;
             }
-
         }
 
         dp[i] = max_;
     }
 
     return dp[cap];
+}
+
+//Count Binary Strings with no consecutive 0 of length n =====================================================================
+
+int countBinaryStrings(int n)
+{
+    vector<int> dp0(n + 1, 0);
+    vector<int> dp1(n + 1, 0);
+
+    dp1[1] = 1;
+    dp0[1] = 1;
+    for (int i = 2; i <= n; i++)
+    {
+        dp1[i] = dp0[i - 1] + dp1[i - 1];
+        dp0[i] = dp1[i - 1];
+    }
+
+    return dp0[n] + dp1[n];
+}
+
+//Longest Increasing Subsequence (LIS) =======================================================================================
+
+int lis(vector<int> &arr, int n)
+{
+    int omax = 0;
+    vector<int> dp(n);
+
+    for (int i = 0; i < dp.size(); i++)
+    {
+        int max_ = 0;
+
+        for (int j = 0; j < i; j++)
+        {
+            if (arr[j] < arr[i])
+            {
+                if (dp[j] > max_)
+                {
+                    max_ = dp[j];
+                }
+            }
+        }
+
+        dp[i] = max_ + 1;
+
+        if (dp[i] > omax)
+        {
+            omax = dp[i];
+        }
+    }
+
+    return omax;
+}
+
+//Maximum Sum Increasing =====================================================================================================
+
+int maxSumIncreasing(int n, vector<int> &arr)
+{
+    vector<int> dp(n);
+    int omax = INT32_MIN;
+
+    for (int i = 0; i < dp.size(); i++)
+    {
+        int max_ = -1;
+
+        for (int j = 0; j < i; j++)
+        {
+            if (arr[j] <= arr[i])
+            {
+                if (max_ == -1)
+                    max_ = dp[j];
+                else if (dp[j] > max_)
+                    max_ = dp[j];
+            }
+        }
+
+        if (max_ == -1)
+            dp[i] = arr[i];
+        else
+            dp[i] = max_ + arr[i];
+
+        if (dp[i] > omax)
+            omax = dp[i];
+    }
+
+    return omax;
+}
+
+//Longest Bitonic Subsequence ================================================================================================
+//Bitonic subsequences begin with elements in increasing order, followed by elements in decreasing order =====================
+int longbitonicsubseq(int n, vector<int> &arr)
+{
+    vector<int> lis(n, 0); //longest increasing subseq
+    for (int i = 0; i < n; i++)
+    {
+        int max_ = 0;
+
+        for (int j = 0; j < i; j++)
+        {
+            if (arr[j] <= arr[i])
+            {
+                if (lis[j] > max_)
+                {
+                    max_ = lis[j];
+                }
+            }
+        }
+
+        lis[i] = max_ + 1;
+    }
+
+    vector<int> lds(n, 0); //longest decreasing subseq
+    for (int i = n - 1; i >= 0; i--)
+    {
+        int max_ = 0;
+
+        for (int j = n - 1; j > i; j--)
+        {
+            if (arr[j] <= arr[i])
+            {
+                if (lds[j] > max_)
+                {
+                    max_ = lds[j];
+                }
+            }
+        }
+
+        lds[i] = max_ + 1;
+    }
+
+    int omax = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (lis[i] + lds[i] - 1 > omax)
+            omax = lis[i] + lds[i] - 1;
+    }
+
+    return omax;
+}
+
+//Longest Common Subsequence (LCS) ===========================================================================================
+
+int lcs(string str1, string str2)
+{
+    vector<vector<int>> dp(str1.size() + 1, vector<int>(str2.size() + 1, 0));
+
+    for (int i = dp.size() - 2; i >= 0; i--)
+    {
+        for (int j = dp[0].size() - 2; j >= 0; j--)
+        {
+            if (str1[i] == str2[j])
+                dp[i][j] = 1 + dp[i + 1][j + 1];
+            else
+                dp[i][j] = max(dp[i + 1][j], dp[i][j + 1]);
+        }
+    }
+
+    return dp[0][0];
 }
 
 //============================================================================================================================
@@ -405,9 +562,11 @@ int main(int args, char **argv)
     // int capWeight = 7;
     // cout << knapsack(n, v, weight, capWeight) << endl;
 
-    int n = 5;
-    vector<int> v = {15, 14, 10, 45, 30};
-    vector<int> weight = {2, 5, 1, 3, 4};
-    int capWeight = 7;
-    cout << unboundedKnapsack(n, v, weight, capWeight) << endl;
+    // int n = 5;
+    // vector<int> v = {15, 14, 10, 45, 30};
+    // vector<int> weight = {2, 5, 1, 3, 4};
+    // int capWeight = 7;
+    // cout << unboundedKnapsack(n, v, weight, capWeight) << endl;
+
+    cout << lcs("abcd", "aebd") << endl;
 }
