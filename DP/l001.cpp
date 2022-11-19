@@ -520,6 +520,39 @@ int lcs(string str1, string str2)
     return dp[0][0];
 }
 
+//Edit Distance ==============================================================================================================
+
+int editDistance(string str1, string str2)
+{
+    vector<vector<int>> dp(str1.length() + 1, vector<int>(str2.length() + 1, 0));
+
+    for (int i = 0; i < dp.size(); i++)
+    {
+        for (int j = 0; j < dp[0].size(); j++)
+        {
+            if (i == 0)
+                dp[i][j] = j;
+            else if (j == 0)
+                dp[i][j] = i;
+            else
+            {
+                if (str1[i - 1] == str2[j - 1])
+                    dp[i][j] = dp[i - 1][j - 1];
+                else
+                {
+                    int f1 = dp[i][j - 1];     //insertion
+                    int f2 = dp[i - 1][j - 1]; //replace
+                    int f3 = dp[i - 1][j];     //deletion
+
+                    dp[i][j] = min(f1, min(f2, f3)) + 1;
+                }
+            }
+        }
+    }
+
+    return dp[dp.size() - 1][dp[0].size() - 1];
+}
+
 //============================================================================================================================
 
 int main(int args, char **argv)
@@ -568,5 +601,8 @@ int main(int args, char **argv)
     // int capWeight = 7;
     // cout << unboundedKnapsack(n, v, weight, capWeight) << endl;
 
-    cout << lcs("abcd", "aebd") << endl;
+    // cout << lcs("abcd", "aebd") << endl;
+    cout << lcs("abcdgh", "acdghr") << endl;
+
+    // cout << editDistance("ahellobye", "amezooe") << endl;
 }
